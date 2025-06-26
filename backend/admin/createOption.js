@@ -15,10 +15,27 @@ const checkMaxDepth = (subOptions, depth = 1) => {
   return true;
 };
 
+// Recursive function to sanitize and construct sub-options
+const buildSubOptions = (options) => {
+  return options.map(option => {
+    const { title, price, image, extraInfo, subOptions } = option;
+
+    const newOption = {
+      title: title || '',
+      price: price || 0,
+      image: image || '',
+      extraInfo: extraInfo || '',
+      subOptions: Array.isArray(subOptions) ? buildSubOptions(subOptions) : []
+    };
+
+    return newOption;
+  });
+};
+
 const createOption = async (req, res) => {
   const { title, price, image, extraInfo, subOptions } = req.body;
 
-  if (!title || !price) {
+  if (!title || price === undefined) {
     return res.status(400).json({ error: 'Title and price are required' });
   }
 
@@ -32,7 +49,7 @@ const createOption = async (req, res) => {
       price,
       image,
       extraInfo,
-      subOptions: subOptions || [],
+      subOptions: Array.isArray(subOptions) ? buildSubOptions(subOptions) : [],
     });
 
     await newOption.save();

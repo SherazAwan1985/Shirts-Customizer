@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link , useNavigate } from 'react-router-dom';
+
+
+
 
 // Modal component
 function Modal({ open, onClose, children }) {
@@ -201,7 +205,8 @@ export default function AdminDashboard() {
     const [options, setOptions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const navigate = useNavigate();
+  
     // UI state
     const [search, setSearch] = useState('');
     const [sort, setSort] = useState('title');
@@ -209,6 +214,10 @@ export default function AdminDashboard() {
     const [editingOption, setEditingOption] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
 
+function createOption() {
+    const randomId = Math.floor(Math.random() * 100000000); // 8-digit random ID
+    navigate(`/admin/create/${randomId}`);
+  };
     // Fetch options
     useEffect(() => {
         setError(null);
@@ -316,12 +325,12 @@ export default function AdminDashboard() {
                             <option value="price">Sort by Price</option>
                         </select>
                     </div>
-                    <button
+                    <Link
+                        to="/admin/create/new"
                         className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition font-semibold"
-                        onClick={() => { setModalOpen(true); setEditingOption(null); }}
-                    >
+                          >
                         + Create Option
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -350,12 +359,10 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <button
-                                    className="px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600"
-                                    onClick={() => { setEditingOption(option); setModalOpen(true); }}
-                                >
+  
+                                    <Link to={`/admin/create/${option.id}`}>
                                     Edit
-                                </button>
+                                    </Link>
                                 <button
                                     className={`px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700 ${deletingId === option.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     onClick={() => deleteOption(option.id)}
